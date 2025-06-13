@@ -146,4 +146,6 @@ Run the following command:
 wget -c "https://www.dropbox.com/scl/fi/irtbrnmk5e0ecvv8fyrum/audio_dataset.zip?rlkey=p1ebkt9h1bkyjsq3fo2bp667v&st=gxr542e2&dl=1" -O audio_dataset.zip
 ```
 
+Alternatively, you can also download it from [Hugging Face](https://huggingface.co/datasets/SoundMind-RL/SoundMindDataset).
+
 The dataset contains train, test, and validation splits with corresponding text descriptions and metadata stored as JSON files. All annotation files are located in the `dataset-annotation-json` folder in this github.
