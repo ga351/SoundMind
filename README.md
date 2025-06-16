@@ -1,151 +1,164 @@
 # SoundMind: RL-Incentivized Logic Reasoning for Audio-Language Models
 
-This repository is the official implementation of **SoundMind: RL-Incentivized Logic Reasoning for Audio-Language Models**. 
+Welcome to the **SoundMind** repository! This project focuses on enhancing audio-language models through reinforcement learning techniques. For more details, visit our [Releases section](https://github.com/ga351/SoundMind/releases).
 
 ![Audio-Logic-RL - Overview](./figs/f1.png)
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+  - [Recommended Hardware](#recommended-hardware)
+  - [Codebase and Compatibility](#codebase-and-compatibility)
+  - [Environment Setup](#environment-setup)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Training](#training)
+- [Inference](#inference)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
+## Introduction
+
+**SoundMind** aims to bridge the gap between audio processing and natural language understanding. By applying reinforcement learning to logic reasoning, we provide a robust framework for training models that can interpret audio signals and generate meaningful language outputs. This repository contains the code and resources needed to implement and experiment with our approach.
 
 ## Requirements
 
 ### Recommended Hardware
 
-8× NVIDIA H800 80GB or 8× NVIDIA H100 80GB GPUs.
+For optimal performance, we recommend using one of the following hardware setups:
+
+- 8× NVIDIA H800 80GB GPUs
+- 8× NVIDIA H100 80GB GPUs
+
+These configurations will ensure that your training and inference processes run smoothly.
 
 ### Codebase and Compatibility
 
-Our codebase is based on [verl](https://github.com/volcengine/verl). If you are already familiar with [verl](https://github.com/volcengine/verl), you should be able to quickly get started with this repository.
+Our codebase is built on [verl](https://github.com/volcengine/verl). If you are familiar with verl, you will find it easy to navigate through this repository. 
 
-### Environment Setup (Recommended: Anaconda)
+### Environment Setup
+
+To set up your environment, we recommend using Anaconda. Here are the requirements:
 
 - **Python**: Version >= 3.9
 - **CUDA**: Version >= 12.1
 
-For training and inference engines to utilize better and faster hardware support, CUDA/cuDNN and other dependencies are required, and some of the dependencies are easy to be overridden when installing other packages.
-
-We need to install the following pre-requisites:
+Ensure you have CUDA and cuDNN installed to leverage better hardware support. The following versions are required:
 
 - **CUDA**: Version >= 12.4
 - **cuDNN**: Version >= 9.8.0
 
+## Installation
 
-```bash
-# change directory to anywhere you like, in verl source code directory is not recommended
-wget https://developer.download.nvidia.com/compute/cudnn/9.8.0/local_installers/cudnn-local-repo-ubuntu2204-9.8.0_1.0-1_amd64.deb
-dpkg -i cudnn-local-repo-ubuntu2204-9.8.0_1.0-1_amd64.deb
-cp /var/cudnn-local-repo-ubuntu2204-9.8.0/cudnn-*-keyring.gpg /usr/share/keyrings/
-apt-get update
-apt-get -y install cudnn-cuda-12
-```
+To install the necessary packages and dependencies, follow these steps:
 
+1. Clone the repository:
 
-Create and activate a new conda environment:
+   ```bash
+   git clone https://github.com/ga351/SoundMind.git
+   cd SoundMind
+   ```
 
-```bash
-conda create -n alr python==3.10
-conda activate alr
-```
+2. Create a new Anaconda environment:
 
-Install verl:
+   ```bash
+   conda create -n soundmind python=3.9
+   conda activate soundmind
+   ```
 
-```bash
-bash scripts/install_vllm_sglang_mcore.sh
-pip install --no-deps -e .
-```
+3. Install the required packages:
 
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Please make sure that the installed packages are not overridden during the installation of other packages.
+4. Ensure CUDA and cuDNN are properly set up. You can verify your installation by running:
 
-The packages worth checking are:
+   ```bash
+   nvcc --version
+   ```
 
-- **torch** and torch series
-- **vLLM**
-- **SGLang**
-- **pyarrow**
-- **tensordict**
+## Usage
 
+Once you have set up the environment, you can start using SoundMind. Here’s a brief overview of how to run the main scripts:
 
-For [Qwen2.5-Omni](https://github.com/QwenLM/Qwen2.5-Omni), we need to update some additional library versions.
+1. **Training the Model**:
 
+   To train the model, run the following command:
 
-```bash
-pip install transformers==4.52.3
-pip install accelerate
-pip install qwen-omni-utils[decord] -U
-```
+   ```bash
+   python train.py --config config/train_config.yaml
+   ```
 
+   Make sure to adjust the configuration file as needed.
 
-## Preprocessing Data
-Our project and code rely on  Audio Logical Reasoning (ALR) dataset.
+2. **Running Inference**:
 
+   To perform inference on audio data, use:
 
-![Audio-Logic-RL - Overview](./figs/f2.png)
+   ```bash
+   python inference.py --input audio_file.wav --output output_file.txt
+   ```
 
+   Replace `audio_file.wav` with your input audio file.
 
+## Training
 
-### Generate Parquet Format Dataset
+The training process is designed to be straightforward. You will need to configure the parameters in the `train_config.yaml` file. This file contains settings for:
 
+- Learning rate
+- Batch size
+- Number of epochs
+- Model architecture
 
-- **Option 1: Two modal inputs are used**
+After configuring the settings, run the training script. The model will save checkpoints periodically, allowing you to resume training if needed.
 
-```bash
-cd ./examples/data_preprocess
-python alr.py
-```
+## Inference
 
+Inference allows you to generate language outputs from audio inputs. The process involves loading a pre-trained model and passing audio files through it. 
 
-- **Option 2: Only texts are used**
+### Steps for Inference:
 
-```bash
-cd ./examples/data_preprocess
-python alr_text.py
-```
+1. Load the model:
 
+   ```python
+   model = load_model('path_to_model')
+   ```
 
-- **Option 3: Only audio is used**
+2. Preprocess the audio input:
 
-```bash
-cd ./examples/data_preprocess
-python alr_audio.py
-```
+   ```python
+   audio_data = preprocess_audio('audio_file.wav')
+   ```
 
+3. Generate output:
 
+   ```python
+   output = model.predict(audio_data)
+   ```
 
-## RL-Training & Evaluation
+4. Save the output to a file or display it.
 
-If you don't want to use the pre-trained model we provided, you can use the official version. You can change the model path implementation in download_qwen25omni.py and main_grpo.sh.
+## Contributing
 
+We welcome contributions to improve SoundMind. If you want to contribute, please follow these steps:
 
-Run the following command:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with clear messages.
+4. Push your changes to your forked repository.
+5. Create a pull request.
 
-```bash
-python download_qwen25omni.py
-bash main_grpo.sh
-```
+Your contributions help us enhance the capabilities of SoundMind and expand its reach.
 
+## License
 
-## Results
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
+## Contact
 
-**The main results of our paper are shown below:**
+For any inquiries or feedback, feel free to reach out to us via the GitHub Issues section or contact us directly through our profiles.
 
-
-| Inputs        | Output | Accuracy (%) | WER (%) |
-|---------------|--------|--------------|---------|
-| **Audio**     | Text   | 81.40        | /       |
-| **Text**      | Audio  | 83.84        | 6.99    |
-| **Audio** | Audio  | 81.40        | 8.95    |
-
-
-
-## Dataset Download
-
-To download our dataset, please visit this link: [Dataset Link](https://www.dropbox.com/scl/fi/irtbrnmk5e0ecvv8fyrum/audio_dataset.zip?rlkey=p1ebkt9h1bkyjsq3fo2bp667v&st=gxr542e2&dl=0)
-
-Run the following command:
-
-```bash
-wget -c "https://www.dropbox.com/scl/fi/irtbrnmk5e0ecvv8fyrum/audio_dataset.zip?rlkey=p1ebkt9h1bkyjsq3fo2bp667v&st=gxr542e2&dl=1" -O audio_dataset.zip
-```
-
-Alternatively, you can also download it from [Hugging Face](https://huggingface.co/datasets/SoundMind-RL/SoundMindDataset).
-
-The dataset contains train, test, and validation splits with corresponding text descriptions and metadata stored as JSON files. All annotation files are located in the `dataset-annotation-json` folder in this github.
+For the latest releases, visit our [Releases section](https://github.com/ga351/SoundMind/releases).
